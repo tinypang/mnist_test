@@ -3,59 +3,59 @@ from scipy import misc
 import random
 import math
 
-def input():
+def input():	#function for inputting raw images
 	image = misc.imread('10.jpg', flatten = True)
 	return(image)
 
-def activation(node):
+def activation(node): #activation fn
 	return 1/(1+math.exp(-node.input)) 
 
-def d_activation(node):
+def d_activation(node):	#derivative of activation fn
 	t =  math.exp(-node.input)
 	return t/((1+t)**2)
 
-def main(in_img, weights, bias, alpha, m , theta):
+def main(in_img, weights, bias, alpha, m , theta):	#main function that creates all arrays and calls functions
 	#in_img = input()
 	#alpha = 100
 	#m = 2
 	#theta = 0.001
-	w0, w1 = weights
+	w0, w1 = weights		#set weights and bias to those parsed in
 	B0, B1 = bias
 	input_layer = []
-	for i in in_img:	
+	for i in in_img:		#initialises input layer
 		#for j in i:
 		for j in w0:
 			new_node = node(i,0,j)			
 			input_layer.append(new_node)
 	ninput = len(input_layer)
-	nhidden = ninput/2
+	nhidden = ninput/2		#sets number of hidden nodes
 	#for i in input_layer:
 	#	i.init_weights(init_weights)
 	hidden_layer = []
-	for i in range(0, nhidden):
+	for i in range(0, nhidden):			#initialises hidden layer
 		for j in w1:
 			hidden_layer.append(node(0,1,j))
 		#hidden_layer[i].init_weights(ninput)
 			#B0.append((random.uniform(-0.1,0.1)))
 	output_layer = []
-	for i in range(0, ninput):
+	for i in range(0, ninput):			#initialises output layer
 		output_layer.append(node(0,2))
 		#B1.append((random.uniform(-0.1,0.1)))
-	deltaW1 = np.zeros((ninput,nhidden))
+	deltaW1 = np.zeros((ninput,nhidden))			#initialises deltaW matrices and deltaB vectors
 	deltaW0 = np.zeros((nhidden,ninput))
 	deltaB0 = np.zeros(nhidden)
 	deltaB1 = np.zeros(ninput)
-	hidden_layer = feed_forward(input_layer, hidden_layer, B0)
+	hidden_layer = feed_forward(input_layer, hidden_layer, B0)	#perform feed forward pass
 	output_layer = feed_forward(hidden_layer, output_layer, B1)
-	error2 = output_error(output_layer, input_layer)
+	error2 = output_error(output_layer, input_layer)		#perform error back propagation
 	error1 = hidden_error(hidden_layer, error2)
-	deltapartialW1, deltapartialB1 = compute_partials(error2, hidden_layer)
+	deltapartialW1, deltapartialB1 = compute_partials(error2, hidden_layer)		#calculate partial derivatives for W and B
 	deltapartialW0, deltapartialB0 = compute_partials(error1, input_layer)
-	deltaW0 = np.add(deltaW0, deltapartialW0)
+	deltaW0 = np.add(deltaW0, deltapartialW0)		#calculate new values of deltaW and deltaB
 	deltaW1 = np.add(deltaW1, deltapartialW1)
 	deltaB0 = np.add(deltaB0, deltapartialB0)
 	deltaB1 = np.add(deltaB1, deltapartialB1)
-	B0 = B0-alpha*((1.0/m)*deltaB0)
+	B0 = B0-alpha*((1.0/m)*deltaB0)				#calculate new values of W and B using deltaW and deltaB
 	B1 = B1-alpha*((1.0/m)*deltaB1)
 	W0, W1 = [], []
 	for i in input_layer:
@@ -66,9 +66,9 @@ def main(in_img, weights, bias, alpha, m , theta):
 		for W11 in i.weights:
 			W11 = W11 - alpha*((1.0/m)*deltaW1+(theta*W1))
 		W1.append(i.weights)
-	return cost_function(input_layer, hidden_layer, output_layer,m,theta), W0, W1, B0, B1
+	return cost_function(input_layer, hidden_layer, output_layer,m,theta), W0, W1, B0, B1	#return value of cost function using new weights and bias
 
-def feed_forward(layer1, layer2, biaslayer):
+def feed_forward(layer1, layer2, biaslayer):	#feed forward function that applies weights and activation to all nodes in a layer and passes them to the next layer
 	for i in range(0, len(layer2)):
 		z = 0
 		for j in layer1:
@@ -79,7 +79,7 @@ def feed_forward(layer1, layer2, biaslayer):
 		layer2[i].output=activation(layer2[i])
 	return layer2
 
-def output_error(output, input):
+def output_error(output, input):	#function that works out the error for the output layer
 	diff, fdash, error = [], [], []
 	for i in range(0, len(output)):
 		diff.append(-(input[i].output-output[i].output))
@@ -88,7 +88,7 @@ def output_error(output, input):
 		error.append([diff[i]*fdash[i]])
 	return np.matrix(error)
 
-def hidden_error(hidden, out_error):
+def hidden_error(hidden, out_error):	#function that works out error for hidden layers
 	fdash, weights = [], []
 	for i in range(0, len(hidden)):
 		weights.append(hidden[i].weights)
@@ -100,7 +100,7 @@ def hidden_error(hidden, out_error):
 		error.append([diff.A1[i]*fdash[i]])
 	return np.matrix(error)
 	
-def compute_partials(error_lplus1, layerl):
+def compute_partials(error_lplus1, layerl):	#compute partial derivatives for weights and bias
 	a = []
 	for i in range(0, len(layerl)):
 		a.append([layerl[i].output])
@@ -109,7 +109,7 @@ def compute_partials(error_lplus1, layerl):
 	deltapB = error_lplus1
 	return deltapW, deltapB
 		
-def cost_function(inputl, hiddenl, outputl,m,theta):
+def cost_function(inputl, hiddenl, outputl,m,theta):	#calculate value of cost function on current weights and bias
 	left = 0
 	for i in range(0,len(inputl)):
 		left = left + 0.5*pow((outputl[i].output - inputl[i].output),2)
@@ -124,12 +124,12 @@ def cost_function(inputl, hiddenl, outputl,m,theta):
 	right = (theta/2.0)*right
 	return left + right
 		
-class node(object):
+class node(object):	#creates node object
 	def __init__(self,output,layer, weights=[]):
 		#assert input == float 	#check input is an int
 		#assert layer == int
-		self.input = 0 	#set input attribute to input given on creation
-		self.output = output	   	#set default output to 0
+		self.input = 0 	#set input attribute to 0; input layer has no input so default is 0
+		self.output = output	   	#set output to one given on creation
 		self.layer = layer
 		self.weights = weights
 
