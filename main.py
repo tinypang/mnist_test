@@ -57,10 +57,11 @@ m = 2
 theta = 0.001
 costfunc = []
 weights = []
-nhidden = 14
+ninput = len(dataset[0][0])
+nhidden = ninput/2
 for i in range(0, len(dataset)):	#initialise weights and bias
-	w0, w1, b0, b1 = [], [], [], []
-	for i in range(0,28):
+	w0, w1, b0, b1 = [], [], [], []		#w0 and w1 are arrays of arrays ie. array of weights
+	for i in range(0,ninput):
 		temp = []
 		for j in range(0,nhidden):
 			temp.append(random.uniform(-0.1,0.1))
@@ -68,7 +69,7 @@ for i in range(0, len(dataset)):	#initialise weights and bias
 		w0.append(temp)
 	for i in range(0,nhidden):
 		temp = []
-		for j in range(0,28):
+		for j in range(0,ninput):
 			temp.append(random.uniform(-0.1,0.1))
 			b1.append(random.uniform(-0.1,0.1))
 		w1.append(temp)

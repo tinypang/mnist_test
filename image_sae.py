@@ -3,10 +3,6 @@ from scipy import misc
 import random
 import math
 
-def input():	#function for inputting raw images
-	image = misc.imread('10.jpg', flatten = True)
-	return(image)
-
 def activation(node): #activation fn
 	return 1/(1+math.exp(-node.input)) 
 
@@ -22,12 +18,11 @@ def main(in_img, weights, bias, alpha, m , theta):	#main function that creates a
 	w0, w1 = weights		#set weights and bias to those parsed in
 	B0, B1 = bias
 	input_layer = []
-	for i in in_img:		#initialises input layer
-		#for j in i:
-		for j in w0:
-			new_node = node(i,0,j)			
+	print len(in_img), len(w0)
+	for i in range(len(in_img)):		#initialises input layer for each pixel in the input image
+			new_node = node(in_img[i],0,w0[i])			
 			input_layer.append(new_node)
-	ninput = len(input_layer)
+	ninput = len(input_layer)	
 	nhidden = ninput/2		#sets number of hidden nodes
 	#for i in input_layer:
 	#	i.init_weights(init_weights)
