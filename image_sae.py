@@ -18,18 +18,16 @@ def main(in_img, weights, bias, alpha, m , theta):	#main function that creates a
 	w0, w1 = weights		#set weights and bias to those parsed in
 	B0, B1 = bias
 	input_layer = []
-	print len(in_img), len(w0)
 	for i in range(len(in_img)):		#initialises input layer for each pixel in the input image
 			new_node = node(in_img[i],0,w0[i])			
 			input_layer.append(new_node)
 	ninput = len(input_layer)	
 	nhidden = ninput/2		#sets number of hidden nodes
 	#for i in input_layer:
-	#	i.init_weights(init_weights)
-	hidden_layer = []
+	#	i.init_weights(init_weights)	
+	hidden_layer = []	
 	for i in range(0, nhidden):			#initialises hidden layer
-		for j in w1:
-			hidden_layer.append(node(0,1,j))
+			hidden_layer.append(node(0,1,w1[i]))
 		#hidden_layer[i].init_weights(ninput)
 			#B0.append((random.uniform(-0.1,0.1)))
 	output_layer = []
@@ -53,21 +51,24 @@ def main(in_img, weights, bias, alpha, m , theta):	#main function that creates a
 	B0 = B0-alpha*((1.0/m)*deltaB0)				#calculate new values of W and B using deltaW and deltaB
 	B1 = B1-alpha*((1.0/m)*deltaB1)
 	W0, W1 = [], []
+	test = 0
 	for i in input_layer:
-		for W00 in i.weights:
-			W00 = W00 - alpha*((1.0/m)*deltaW0+(theta*W0))
+		for W00 in i.weights:	
+			W00 = W00 - alpha*((1.0/m)*deltaW0+(theta*W00))
+			test = test + 1
+			print i.output, test 
 		W0.append(i.weights)
 	for i in hidden_layer:
 		for W11 in i.weights:
-			W11 = W11 - alpha*((1.0/m)*deltaW1+(theta*W1))
+			W11 = W11 - alpha*((1.0/m)*deltaW1+(theta*W11))
+			print i.output
 		W1.append(i.weights)
 	return cost_function(input_layer, hidden_layer, output_layer,m,theta), W0, W1, B0, B1	#return value of cost function using new weights and bias
 
 def feed_forward(layer1, layer2, biaslayer):	#feed forward function that applies weights and activation to all nodes in a layer and passes them to the next layer
 	for i in range(0, len(layer2)):
 		z = 0
-		for j in layer1:
-			#print z, j.output, j.weights[i]
+		for j in layer1:			
 			z=z+j.output*j.weights[i]
 		z = z + biaslayer[i]
 		layer2[i].input = z

@@ -52,32 +52,32 @@ def importMNIST(startN,howMany,bTrain=True,only01=False):	#import MNIST
 	return T
 
 dataset= importMNIST(0,50)	#get first 50 images
-alpha = 100			#set various parametes
-m = 2
+alpha = 100.0			#set various parametes
+m = 2.0
 theta = 0.001
 costfunc = []
-weights = []
+weights, bias = [],[]
 ninput = len(dataset[0][0])
 nhidden = ninput/2
 for i in range(0, len(dataset)):	#initialise weights and bias
-	w0, w1, b0, b1 = [], [], [], []		#w0 and w1 are arrays of arrays ie. array of weights
+	w0, w1, b0, b1= [], [], [], []		#w0 and w1 are arrays of arrays ie. array of weights
 	for i in range(0,ninput):
-		temp = []
+		tempw = []
 		for j in range(0,nhidden):
-			temp.append(random.uniform(-0.1,0.1))
-			b0.append(random.uniform(-0.1,0.1))
-		w0.append(temp)
+			tempw.append(random.uniform(-0.1,0.1))
+		b1.append(random.uniform(-0.1,0.1))
+		w0.append(tempw)
 	for i in range(0,nhidden):
 		temp = []
 		for j in range(0,ninput):
 			temp.append(random.uniform(-0.1,0.1))
-			b1.append(random.uniform(-0.1,0.1))
+		b0.append(random.uniform(-0.1,0.1))
 		w1.append(temp)
 	weights.append([w0,w1])
-bias = [b0,b1]
+	bias.append([b0,b1])
 for i in range(0,len(dataset)):		#run first iteration of network
+	costfunc.append(image_sae.main(dataset[i][0],weights[i],bias[i],alpha,m,theta))
 	print i
-	costfunc.append(image_sae.main(dataset[i][0],weights[i], bias,alpha,m,theta))
 print costfunc
 	
 
